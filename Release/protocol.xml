@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--
+Field Supported Attributes:
+command_id,
+length_specifier
+present_condition
+zlib: 1: compress message body use zlib, 0: no zlib used.
+mode: encode: generate encode code only, generate decode only, all: generate all
+c++ protocol header code header:
+messages::HwpHeader createHeader(uint16_t command_id, uint16_t version = 1, uint16_t reserved = 0x6102)
+{
+    messages::HwpHeader header;
+    header.length = 0;
+    header.command_id = command_id;
+    header.version = version;
+    header.reserved = reserved;
+    header.reserved2 = microtime();
+}
+
+-->
+<protocol name="client" version="1.15" author="linkg" release_date="2015.6.8">
+
+  <header desc="16 bytes header, unused for generator, on for description protocol">
+    <field name="length" type="uint16_t" />
+    <field name="command_id" type="uint16_t" />
+    <field name="version"  type="uint16_t" />
+    <field name="reserved" type="uint16_t" /> <!-- For packet check: such as 0x3333-->
+    <field name="reserved2" type="uint64_t" /> <!-- May be timestamp -->
+  </header>
+
+  <structures>
+    <structure name="CustomInfo" >
+      <field name="ci_data1" type="uint32_t" />
+      <field name="ci_data2" type="uint16_t" />
+      <field name="ci_data3" type="bool" />
+    </structure>
+
+  </structures>
+
+  <messages>
+    
+    <message name="HwpHeader" is_header="1" >
+      <field name="length" type="uint16_t" />
+      <field name="command_id" type="uint16_t" />
+      <field name="version"  type="uint16_t" />
+      <field name="reserved" type="uint16_t" /> <!-- For packet check, such as 0x3333-->
+      <field name="reserved2" type="uint64_t" /> <!-- May be timestamp -->
+    </message>
+    
+    <message name="LoginReq" command_id="CID_LOGIN_REQ = 1" mode="all">	<!-- 网络出错 -->
+      <field name="user_id" type="int16_t" />
+      <field name="password" type="std::string" />
+      <field name="custom_info" type="CustomInfo" />
+    </message>
+
+  </messages>
+  
+</protocol>
+
+

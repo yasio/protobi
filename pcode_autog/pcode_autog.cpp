@@ -271,6 +271,15 @@ bool is_integral_type(const std::string& type)
         "long double" == type;
 }
 
+std::string parse_item_type(const std::string& stlvec)
+{
+    int start = stlvec.find_first_of('<');
+    int end = stlvec.find_first_of('>', start + 1);
+
+    return stlvec.substr(start + 1, end - start - 1);
+}
+
+#if 1
 bool is_basic_type(const std::string& type)
 {
     return type == ("bool") ||
@@ -297,6 +306,34 @@ bool is_basic_type(const std::string& type)
         type == ("double") ||
         type == ("long double");
 }
+#else
+bool is_basic_type(const std::string& type)
+{
+	return type.find("bool") != type.npos ||
+		type.find("char") != type.npos ||
+		type.find("int8_t") != type.npos ||
+		type.find("int16_t") != type.npos ||
+		type.find("int32_t") != type.npos ||
+		type.find("int64_t") != type.npos ||
+		type.find("uint8_t") != type.npos ||
+		type.find("uint16_t") != type.npos ||
+		type.find("uint32_t") != type.npos ||
+		type.find("uint64_t") != type.npos ||
+		type.find("short") != type.npos ||
+		type.find("int") != type.npos ||
+		type.find("long") != type.npos ||
+		type.find("long long") != type.npos ||
+		type.find("unsigned char") != type.npos ||
+		type.find("unsigned short") != type.npos ||
+		type.find("unsigned int") != type.npos ||
+		type.find("unsigned long") != type.npos ||
+		type.find("unsigned long long") != type.npos ||
+		type.find("float") != type.npos ||
+		type.find("long float") != type.npos ||
+		type.find("double") != type.npos ||
+		type.find("long double") != type.npos;
+}
+#endif
 
 bool is_fixed_array_type(const std::string& type)
 {
@@ -1132,7 +1169,7 @@ public:
                     context.prefix = new_prefix;
                     context.arrayIndex = varname_vecidx;
 
-                    if (!is_basic_type(f.type)) // ignore base type array
+                    if (!is_basic_type(parse_item_type(f.type))) // ignore base type array
                         of << ident_str << "    lua_rawgeti(L, -1, " << varname_vecidx << " + 1); \n";
 
                     lua2host(of, ti, temp, new_prefix, context, deep + 1); // recursively

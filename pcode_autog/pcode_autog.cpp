@@ -309,29 +309,29 @@ bool is_basic_type(const std::string& type)
 #else
 bool is_basic_type(const std::string& type)
 {
-	return type.find("bool") != type.npos ||
-		type.find("char") != type.npos ||
-		type.find("int8_t") != type.npos ||
-		type.find("int16_t") != type.npos ||
-		type.find("int32_t") != type.npos ||
-		type.find("int64_t") != type.npos ||
-		type.find("uint8_t") != type.npos ||
-		type.find("uint16_t") != type.npos ||
-		type.find("uint32_t") != type.npos ||
-		type.find("uint64_t") != type.npos ||
-		type.find("short") != type.npos ||
-		type.find("int") != type.npos ||
-		type.find("long") != type.npos ||
-		type.find("long long") != type.npos ||
-		type.find("unsigned char") != type.npos ||
-		type.find("unsigned short") != type.npos ||
-		type.find("unsigned int") != type.npos ||
-		type.find("unsigned long") != type.npos ||
-		type.find("unsigned long long") != type.npos ||
-		type.find("float") != type.npos ||
-		type.find("long float") != type.npos ||
-		type.find("double") != type.npos ||
-		type.find("long double") != type.npos;
+    return type.find("bool") != type.npos ||
+        type.find("char") != type.npos ||
+        type.find("int8_t") != type.npos ||
+        type.find("int16_t") != type.npos ||
+        type.find("int32_t") != type.npos ||
+        type.find("int64_t") != type.npos ||
+        type.find("uint8_t") != type.npos ||
+        type.find("uint16_t") != type.npos ||
+        type.find("uint32_t") != type.npos ||
+        type.find("uint64_t") != type.npos ||
+        type.find("short") != type.npos ||
+        type.find("int") != type.npos ||
+        type.find("long") != type.npos ||
+        type.find("long long") != type.npos ||
+        type.find("unsigned char") != type.npos ||
+        type.find("unsigned short") != type.npos ||
+        type.find("unsigned int") != type.npos ||
+        type.find("unsigned long") != type.npos ||
+        type.find("unsigned long long") != type.npos ||
+        type.find("float") != type.npos ||
+        type.find("long float") != type.npos ||
+        type.find("double") != type.npos ||
+        type.find("long double") != type.npos;
 }
 #endif
 
@@ -1098,7 +1098,8 @@ public:
             }
             else
             {
-                of << ident_str << "lua_getfield(L, -1, \"" << f.name << "\");\n";
+                if (!f.name.empty()) // should be item of stl-vector
+                    of << ident_str << "lua_getfield(L, -1, \"" << f.name << "\");\n";
                 of << ident_str << "assert(lua_istable(L, -1)); \n";
                 auto target = this->pi.struc_tab.find(f.type);
                 if (target != this->pi.struc_tab.end())
@@ -1142,8 +1143,8 @@ public:
             }
             else {
                 if (is_stl_vector(f)) {
-                    bool empty = f.name.empty();
-                    of << ident_str << "lua_getfield(L, -1, \"" << f.name << "\");\n";
+                    if (!f.name.empty())
+                        of << ident_str << "lua_getfield(L, -1, \"" << f.name << "\");\n";
                     of << ident_str << "assert(lua_istable(L, -1)); \n";
                     of << ident_str << "uint16_t " << varname_vecsize << " = luaL_getn(L, -1); \n"
                         /*<< ident_str << "ibs.read_i(" << varname_vecsize << ");\n"*/;
@@ -1180,8 +1181,8 @@ public:
                 }
                 else { // maybe never go here
                     assert(false);
-                    bool empty = f.name.empty();
-                    of << ident_str << "lua_getfield(L, -1, \"" << f.name << "\");\n";
+                    if (!f.name.empty())
+                        of << ident_str << "lua_getfield(L, -1, \"" << f.name << "\");\n";
                     of << ident_str << "assert(lua_istable(L, -1)); \n";
 
                     std::string index_var_name = get_array_field_trim_name(f.name) + "index";

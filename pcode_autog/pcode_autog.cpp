@@ -1322,19 +1322,20 @@ public:
                     std::string::size_type pos = f.name.find_first_of('[');
                     new_prefix = prefix + (f.name.substr(0, pos) + "[" + index_var_name + "]");
 
+                    // parse item type
                     pos = f.type.find_first_of('<');
                     temp.type = f.type.substr(pos + 1, f.type.find_first_of('>') - pos - 1);
 
                     ctx.prefix = new_prefix;
                     ctx.arrayIndex = index_var_name;
 
-                    if (!is_basic_type(f.type)) {
+                    if (!is_basic_type(temp.type)) {
                         of << ident_str << "    lua_newtable(L);\n";
                     }
 
                     host2lua(of, ti, temp, new_prefix, ctx, deep + 1);
 
-                    if (!is_basic_type(f.type)) {
+                    if (!is_basic_type(temp.type)) {
                         of << ident_str << "    lua_rawseti(L, -2, " << index_var_name << " + 1);\n";
                     }
 

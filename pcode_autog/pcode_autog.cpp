@@ -186,9 +186,9 @@ bool is_bytestream(const field& f)
         f.type == "int8_t*" ||
         f.type == "uint8_t*" ||
         ((f.type == "char" ||
-        f.type == "unsigned char" ||
-        f.type == "int8_t" ||
-        f.type == "uint8_t") && is_fixed_array(f));
+            f.type == "unsigned char" ||
+            f.type == "int8_t" ||
+            f.type == "uint8_t") && is_fixed_array(f));
 }
 
 std::string get_fixed_array_size(const field& f)
@@ -590,6 +590,8 @@ public:
         _Write_end(this->structures_decl);
     }
 
+    bool enc_lua_enabled_ = false;
+    bool dec_lua_enabled_ = false;
     void _Generate_messages_decl(void)
     {
         auto filename = prefix + "messages";
@@ -599,8 +601,7 @@ public:
         this->messages_decl << "#include \"" << prefix << "constants.h\"\n";
         this->messages_decl << "#include \"" << prefix << "includes.h\"\n";
         this->messages_decl << "#include \"" << prefix << "structures.h\"\n\n";
-        this->messages_decl << "#include \"iluastream.h\"\n";
-        this->messages_decl << "#include \"oluastream.h\"\n\n";
+        this->messages_decl << "extern \"C\" struct lua_State;\n\n";
         this->messages_decl << "using namespace structures;\n";
         this->messages_decl << "namespace messages {\n\n";
         this->messages_decl << "struct MsgBase {\n"
@@ -634,17 +635,19 @@ public:
                 if (mi->mode & MODE_ENCODE)
                     this->messages_decl << "    obinarystream encode(void)  const override;\n\n";
 
-                if (mi->mode & MODE_DECODE)  {
+                if (mi->mode & MODE_DECODE) {
                     this->messages_decl << "    // decode return the remain bytes of buffer.\n";
                     this->messages_decl << "    int decode(const char* data, int len) override;\n\n";
                 }
 
                 if (mi->mode & MODE_DECODELUA) {
+                    dec_lua_enabled_ = true;
                     this->messages_decl << "    // decode LUA.\n";
                     this->messages_decl << "    virtual int decodeLua(lua_State* L) override;\n\n";
                 }
 
                 if (mi->mode & MODE_ENCODELUA) {
+                    enc_lua_enabled_ = true;
                     this->messages_decl << "    virtual int encodeLua(lua_State* L) const override;\n\n";
                 }
                 this->messages_decl << "    int get_id() const override { return " << mi->command_id_detail.at(0) << "; };\n\n";
@@ -654,7 +657,7 @@ public:
                 if (mi->mode & MODE_ENCODE)
                     this->messages_decl << "    obinarystream encode(void) const;\n\n";
 
-                if (mi->mode & MODE_DECODE)  {
+                if (mi->mode & MODE_DECODE) {
                     this->messages_decl << "    // decode return the remain bytes of buffer.\n";
                     this->messages_decl << "    int decode(const char* data, int len);\n\n";
                 }
@@ -682,7 +685,15 @@ public:
         this->messages_impl << "#include \"" << prefix << "constants.h\"\n\n";
         this->messages_impl << "#include <unordered_map>\n\n";
         this->messages_impl << "#include <functional>\n\n";
-        this->messages_impl << "#include \"purelib/utils/crypto_wrapper.h\"\n\n";
+
+        if (dec_lua_enabled_)
+            this->messages_impl << "#include \"iluastream.h\"\n";
+        if (enc_lua_enabled_)
+            this->messages_impl << "#include \"oluastream.h\"\n";
+
+        if (dec_lua_enabled_ || enc_lua_enabled_)
+            this->messages_impl << "\n";
+
         // this->messages_impl << "using namespace exx::net;\n";
         this->messages_impl << "using namespace messages;\n\n";
 
@@ -719,7 +730,7 @@ public:
                     _To_netval(this->messages_impl, *mi, *fi, "this->", 1);
                 }
 
-                if (!mi->is_header && mi->zlib)  {
+                if (!mi->is_header && mi->zlib) {
                     this->messages_impl << ident(1) << "obs.compress(offset); // do body compress.\n\n";
                 }
 
@@ -818,7 +829,7 @@ public:
 
         for (auto& mi : this->pi.messages)
         {
-            if (!mi.is_header){
+            if (!mi.is_header) {
                 this->messages_impl << "    s_table_message_ctor[" << mi.command_id_detail[0] << "]" <<
                     "= []()->MsgBase*{ return new(s_allocp) " << mi.name << "(); };\n";
             }
@@ -1610,7 +1621,7 @@ int main(int argc, char** argv)
 
 
     obinarystream obs;
-    req.encode( header.encode(obs) );
+    req.encode(header.encode(obs));
 
     auto data = obs.move();
 

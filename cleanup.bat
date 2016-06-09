@@ -1,6 +1,6 @@
 @echo off
 
-call cleanup_i pcode_autog
+call cleanup_i .\
 
 goto :eof
 

@@ -554,9 +554,9 @@ public:
         _Write_start(this->includes_decl, filename.c_str());
         this->includes_decl << "\n";
         // this->includes_decl << "#include \"simpleppdef.h\"\n";
-        this->includes_decl << "#include \"purelib/utils/ibinarystream.h\"\n";
-        this->includes_decl << "#include \"purelib/utils/obinarystream.h\"\n";
-        this->includes_decl << "#include \"purelib/utils/oslib.h\"\n";
+        this->includes_decl << "#include \"ibinarystream.h\"\n";
+        this->includes_decl << "#include \"obinarystream.h\"\n";
+        this->includes_decl << "#include \"oslib.h\"\n";
         this->includes_decl << "#include <assert.h>\n";
         this->includes_decl << "#include <vector>\n";
         this->includes_decl << "#include <iomanip>\n";
@@ -599,7 +599,7 @@ public:
         this->messages_decl << "#include \"" << prefix << "constants.h\"\n";
         this->messages_decl << "#include \"" << prefix << "includes.h\"\n";
         this->messages_decl << "#include \"" << prefix << "structures.h\"\n\n";
-        this->messages_decl << "#include \"iluastream.h\"\n\n";
+        this->messages_decl << "#include \"iluastream.h\"\n";
         this->messages_decl << "#include \"oluastream.h\"\n\n";
         this->messages_decl << "using namespace structures;\n";
         this->messages_decl << "namespace messages {\n\n";

@@ -33,7 +33,7 @@
 #    endif
 #endif
 
-#define VERSION "1.15.9"
+#define VERSION "1.16.6"
 
 #define _FORMAT_CTL(width,delim) std::setw(width) << std::setfill(delim) << std::setiosflags(std::ios_base::left)
 #define _FORMAT_STRING(width,tip,value,delim) _FORMAT_CTL(width, delim) << std::string(tip) + " " << " " << value
@@ -82,7 +82,9 @@ enum {
     MODE_NONE = 0,
     MODE_ENCODE = 1,
     MODE_DECODE = 2,
-    MODE_ALL = MODE_ENCODE | MODE_DECODE,
+    MODE_ENCODELUA = 4,
+    MODE_DECODELUA = 8,
+    MODE_ALL = MODE_ENCODE | MODE_DECODE | MODE_ENCODELUA | MODE_DECODELUA,
 };
 
 struct typeinfo
@@ -447,15 +449,29 @@ public:
         typeinfo msg;
         msg.name = elem_message.get_attribute_value("name", "");
         auto mode_s = elem_message.get_attribute_value("mode", "all");
-        if (mode_s == "all")
-            msg.mode = MODE_ALL;
-        else if (mode_s == "encode")
-            msg.mode = MODE_ENCODE;
-        else if (mode_s == "decode")
-            msg.mode = MODE_DECODE;
-        else {
-            msg.mode = MODE_NONE;
+        auto subModes = nsc::split(mode_s, "|");
+        msg.mode = MODE_NONE;
+        for (auto& m : subModes) {
+            if (m == "encode") {
+                msg.mode |= MODE_ENCODE;
+            }
+            else if (m == "decode") {
+                msg.mode |= MODE_DECODE;
+            }
+            else if (m == "encodelua") {
+                msg.mode |= MODE_ENCODELUA;
+            }
+            else if (m == "decodelua") {
+                msg.mode |= MODE_DECODELUA;
+            }
+            else if (m == "all") {
+                msg.mode |= MODE_ALL;
+            }
+            if (msg.mode == MODE_ALL) {
+                break;
+            }
         }
+
         msg.zlib = elem_message.get_attribute_value("zlib", false);
         msg.command_id = elem_message.get_attribute_value("command_id", "");
         msg.is_header = elem_message.get_attribute_value("is_header", false);
@@ -623,9 +639,14 @@ public:
                     this->messages_decl << "    int decode(const char* data, int len) override;\n\n";
                 }
 
-                this->messages_decl << "    // decode LUA.\n";
-                this->messages_decl << "    virtual int decodeLua(lua_State* L) override;\n\n";
-                this->messages_decl << "    virtual int encodeLua(lua_State* L) const override;\n\n";
+                if (mi->mode & MODE_DECODELUA) {
+                    this->messages_decl << "    // decode LUA.\n";
+                    this->messages_decl << "    virtual int decodeLua(lua_State* L) override;\n\n";
+                }
+
+                if (mi->mode & MODE_ENCODELUA) {
+                    this->messages_decl << "    virtual int encodeLua(lua_State* L) const override;\n\n";
+                }
                 this->messages_decl << "    int get_id() const override { return " << mi->command_id_detail.at(0) << "; };\n\n";
                 this->messages_decl << "    const char* get_className() const override { return \"" << mi->name << "\"; };\n\n";
             }
@@ -742,39 +763,41 @@ public:
             /////// LUA SUPPORT ///////
             if (!mi->is_header)
             {
+                if (mi->mode & MODE_DECODELUA) {
 #if 1 // decode from lua talbe
-                this->messages_impl << "int " << mi->name << "::decodeLua(lua_State* L)\n{\n";
-                this->messages_impl << "    auto top = lua_gettop(L);\n";
-                this->messages_impl << "    " << "iluastream ibs(L);\n";
-                for (auto fi = mi->fields.begin(); fi != mi->fields.end(); ++fi) {
-                    lua2host_context ctx;
-                    ctx.prefix = "this->";
-                    lua2host(this->messages_impl, *mi, *fi, "this->", ctx, 1);
-                }
-                //  this->messages_impl << "    return ibs.remain();\n";
-                this->messages_impl << "\n    auto check = lua_gettop(L);\n";
-                this->messages_impl << "\n    assert(top == check);\n";
-                this->messages_impl << "\n    return 0;\n";
-                this->messages_impl << "}\n\n";
+                    this->messages_impl << "int " << mi->name << "::decodeLua(lua_State* L)\n{\n";
+                    this->messages_impl << "    auto top = lua_gettop(L);\n";
+                    this->messages_impl << "    " << "iluastream ibs(L);\n";
+                    for (auto fi = mi->fields.begin(); fi != mi->fields.end(); ++fi) {
+                        lua2host_context ctx;
+                        ctx.prefix = "this->";
+                        lua2host(this->messages_impl, *mi, *fi, "this->", ctx, 1);
+                    }
+                    //  this->messages_impl << "    return ibs.remain();\n";
+                    this->messages_impl << "\n    auto check = lua_gettop(L);\n";
+                    this->messages_impl << "\n    assert(top == check);\n";
+                    this->messages_impl << "\n    return 0;\n";
+                    this->messages_impl << "}\n\n";
 #endif
-
+                }
+                if (mi->mode & MODE_ENCODELUA) {
 #if 1 // encode to lua table
-                this->messages_impl << "int " << mi->name << "::encodeLua(lua_State* L) const \n{\n";
-                this->messages_impl << "    auto top = lua_gettop(L);\n";
-                this->messages_impl << "    " << "oluastream obs(L);\n";
-                this->messages_impl << "    " << "lua_newtable(L);\n";
-                for (auto fi = mi->fields.begin(); fi != mi->fields.end(); ++fi) {
-                    host2lua_context ctx;
-                    ctx.prefix = "this->";
-                    host2lua(this->messages_impl, *mi, *fi, "this->", ctx, 1);
-                }
-                this->messages_impl << "\n    auto check = lua_gettop(L);\n";
-                this->messages_impl << "\n    assert(check > top );\n";
-                this->messages_impl << "\n    return 0;\n";
-                this->messages_impl << "}\n\n";
+                    this->messages_impl << "int " << mi->name << "::encodeLua(lua_State* L) const \n{\n";
+                    this->messages_impl << "    auto top = lua_gettop(L);\n";
+                    this->messages_impl << "    " << "oluastream obs(L);\n";
+                    this->messages_impl << "    " << "lua_newtable(L);\n";
+                    for (auto fi = mi->fields.begin(); fi != mi->fields.end(); ++fi) {
+                        host2lua_context ctx;
+                        ctx.prefix = "this->";
+                        host2lua(this->messages_impl, *mi, *fi, "this->", ctx, 1);
+                    }
+                    this->messages_impl << "\n    auto check = lua_gettop(L);\n";
+                    this->messages_impl << "\n    assert(check > top );\n";
+                    this->messages_impl << "\n    return 0;\n";
+                    this->messages_impl << "}\n\n";
 #endif
+                }
             }
-
         }
 
         /// generate temp_create_message func code

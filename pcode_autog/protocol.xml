@@ -24,8 +24,7 @@ messages::HwpHeader createHeader(uint16_t command_id, uint16_t version = 1, uint
     <field name="length" type="uint16_t" />
     <field name="command_id" type="uint16_t" />
     <field name="version"  type="uint16_t" />
-    <field name="reserved" type="uint16_t" /> <!-- use as magic number -->
-    <field name="reserved2" type="uint64_t" /> <!-- May be timestamp -->
+    <field name="reserved" type="uint64_t" /> <!-- use as magic number -->
   </header>
 
   <structures>

@@ -4,14 +4,13 @@
 
 #ifdef _WIN32
 #include <WinSock2.h>
-//#include <Mswsock.h>
+
 #include <Windows.h>
-//#include <Mstcpip.h>
 #else
 #include <arpa/inet.h>
 #endif
 
-#if !defined(_MSC_VER) || (defined(_MSC_VER) && _MSC_VER < 1800)
+#if !defined(_MSC_VER) || (defined(_MSC_VER) && _MSC_VER < 1800) || (NTDDI_VERSION <= 0x06010000 && !defined(WINRT)) 
 /*
 * Byte order conversion functions for 64-bit integers and 32 + 64 bit
 * floating-point numbers.  IEEE big-endian format is used for the
@@ -35,59 +34,59 @@
 
 
 #ifndef htonll
-__inline unsigned __int64 htonll(unsigned __int64 Value)
+inline uint64_t htonll(uint64_t Value)
 {
-	const unsigned __int64 Retval = _WS2_32_WINSOCK_SWAP_LONGLONG(Value);
+	const uint64_t Retval = _WS2_32_WINSOCK_SWAP_LONGLONG(Value);
 	return Retval;
 }
 #endif /* htonll */
 
 #ifndef ntohll
-__inline unsigned __int64 ntohll(unsigned __int64 Value)
+inline uint64_t ntohll(uint64_t Value)
 {
-	const unsigned __int64 Retval = _WS2_32_WINSOCK_SWAP_LONGLONG(Value);
+	const uint64_t Retval = _WS2_32_WINSOCK_SWAP_LONGLONG(Value);
 	return Retval;
 }
 #endif /* ntohll */
 
 #ifndef htonf
-__inline unsigned __int32 htonf(float Value)
+inline uint32_t htonf(float Value)
 {
-	unsigned __int32 Tempval;
-	unsigned __int32 Retval;
-	Tempval = *(unsigned __int32*)(&Value);
+	uint32_t Tempval;
+	uint32_t Retval;
+	Tempval = *(uint32_t*)(&Value);
 	Retval = _WS2_32_WINSOCK_SWAP_LONG(Tempval);
 	return Retval;
 }
 #endif /* htonf */
 
 #ifndef ntohf
-__inline float ntohf(unsigned __int32 Value)
+inline float ntohf(uint32_t Value)
 {
-	const unsigned __int32 Tempval = _WS2_32_WINSOCK_SWAP_LONG(Value);
+	const uint32_t Tempval = _WS2_32_WINSOCK_SWAP_LONG(Value);
 	float Retval;
-	*((unsigned __int32*)&Retval) = Tempval;
+	*((uint32_t*)&Retval) = Tempval;
 	return Retval;
 }
 #endif /* ntohf */
 
 #ifndef htond
-__inline unsigned __int64 htond(double Value)
+inline uint64_t htond(double Value)
 {
-	unsigned __int64 Tempval;
-	unsigned __int64 Retval;
-	Tempval = *(unsigned __int64*)(&Value);
+	uint64_t Tempval;
+	uint64_t Retval;
+	Tempval = *(uint64_t*)(&Value);
 	Retval = _WS2_32_WINSOCK_SWAP_LONGLONG(Tempval);
 	return Retval;
 }
 #endif /* htond */
 
 #ifndef ntohd
-__inline double ntohd(unsigned __int64 Value)
+inline double ntohd(uint64_t Value)
 {
-	const unsigned __int64 Tempval = _WS2_32_WINSOCK_SWAP_LONGLONG(Value);
+	const uint64_t Tempval = _WS2_32_WINSOCK_SWAP_LONGLONG(Value);
 	double Retval;
-	*((unsigned __int64*)&Retval) = Tempval;
+	*((uint64_t*)&Retval) = Tempval;
 	return Retval;
 }
 #endif /* ntohd */

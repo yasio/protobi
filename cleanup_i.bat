@@ -9,6 +9,8 @@ rmdir /q /s ipch
 del /q /f *.sdf
 del /q /f *.ncb
 del /q /f *.db
+del /q /f *.iobj
+del /q /f *.ipdb
 del /q /f /a *.suo
 del /q /f .\Debug\*.exe
 del /q /f .\Debug\*.ilk

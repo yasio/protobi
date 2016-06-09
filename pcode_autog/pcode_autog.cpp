@@ -687,7 +687,7 @@ public:
         this->messages_impl << "using namespace messages;\n\n";
 
         this->messages_impl << "// pcode_autog_create_header implemented by user.\n";
-        this->messages_impl << "extern obinarystream pcode_autog_begin_encode(uint16_t command_id, uint16_t reserved = 0x6102);\n\n";
+        this->messages_impl << "extern obinarystream pcode_autog_begin_encode(uint16_t command_id);\n\n";
         for (auto mi = this->pi.messages.begin(); mi != this->pi.messages.end(); ++mi)
         {
             // constructor

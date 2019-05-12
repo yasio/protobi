@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -14,21 +14,21 @@
     <ProjectGuid>{A4153CC8-4BFC-41EB-A6C6-8B3FA1A766EA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>pcode_autog</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -84,24 +84,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="pcode_autog.cpp" />
-    <ClCompile Include="purelib\utils\ibinarystream.cpp" />
-    <ClCompile Include="purelib\utils\obinarystream.cpp" />
-    <ClCompile Include="purelib\utils\oslib.cpp" />
-    <ClCompile Include="purelib\utils\xmldrv.cpp" />
-    <ClCompile Include="purelib\utils\xxfsutility.cpp" />
+    <ClCompile Include="utils\xmldrv.cpp" />
+    <ClCompile Include="utils\xxfsutility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="protocol.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="purelib\utils\xmldrv.inl" />
+    <None Include="utils\xmldrv.inl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="purelib\utils\ibinarystream.h" />
-    <ClInclude Include="purelib\utils\obinarystream.h" />
-    <ClInclude Include="purelib\utils\oslib.h" />
-    <ClInclude Include="purelib\utils\xmldrv.h" />
-    <ClInclude Include="purelib\utils\xxfsutility.h" />
+    <ClInclude Include="utils\politedef.h" />
+    <ClInclude Include="utils\xmldrv.h" />
+    <ClInclude Include="utils\xxfsutility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -991,7 +991,7 @@ public:
                 }*/
             }
             else if (is_string_type(f.type)) {
-                of << ident_str << "obs:write_string(" << prefix << f.name << ");\n";
+                of << ident_str << "obs:write_v(" << prefix << f.name << ");\n";
             }
             else
             {
@@ -1131,7 +1131,7 @@ public:
                     assert(false);// of << ident_str << "ibs.read_bytes(" << prefix << f.name << ", " << "sizeof(" << f.name << ") );\n";; // TODO: implement
             }
             else if (is_string_type(f.type)) {
-                of << ident_str << prefix << f.name << " = " << "ibs:read_string();\n";
+                of << ident_str << prefix << f.name << " = " << "ibs:read_v();\n";
             }
             else
             {

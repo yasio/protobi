@@ -152,39 +152,39 @@ std::string ident(int deep)
     return std::string(deep * 4, ' ');
 }
 
-bool is_fixed_array(const field& f)
+bool is_fixed_array(const field & f)
 {
     return f.name.find('[') != std::string::npos;
 };
 
-bool is_variable_pointer(const field& f)
+bool is_variable_pointer(const field & f)
 {
     return '*' == *f.type.rbegin();
 }
 
-bool is_stl_vector(const field& f)
+bool is_stl_vector(const field & f)
 {
     return f.type.find("vector<") != std::string::npos;
 }
 
-bool is_single_type_of_field(const field& f)
+bool is_single_type_of_field(const field & f)
 {
     return !is_fixed_array(f) && !is_variable_pointer(f) && !is_stl_vector(f);
 }
 
-bool is_bytestream(const field& f)
+bool is_bytestream(const field & f)
 {
     return f.type == "char*" ||
         f.type == "unsigned char*" ||
         f.type == "int8_t*" ||
         f.type == "uint8_t*" ||
         ((f.type == "char" ||
-        f.type == "unsigned char" ||
-        f.type == "int8_t" ||
-        f.type == "uint8_t") && is_fixed_array(f));
+            f.type == "unsigned char" ||
+            f.type == "int8_t" ||
+            f.type == "uint8_t") && is_fixed_array(f));
 }
 
-std::string get_fixed_array_size(const field& f)
+std::string get_fixed_array_size(const field & f)
 {
     std::string::size_type begin = f.name.find('[') + 1;
     std::string size_value = f.name.substr(begin, f.name.length() - begin - 1);
@@ -192,7 +192,7 @@ std::string get_fixed_array_size(const field& f)
 }
 
 // if is fixed array, then get name except symbol '[]', else return name
-std::string get_field_name(const field& f)
+std::string get_field_name(const field & f)
 {
     if (is_fixed_array(f))
     {
@@ -203,7 +203,7 @@ std::string get_field_name(const field& f)
     return f.name;
 }
 
-bool is_oneb_type(const std::string& type)
+bool is_oneb_type(const std::string & type)
 {
     return "bool" == type ||
         "char" == type ||
@@ -212,7 +212,7 @@ bool is_oneb_type(const std::string& type)
         "unsigned char" == type;
 }
 
-bool is_twob_type(const std::string& type)
+bool is_twob_type(const std::string & type)
 {
     return "short" == type ||
         "unsigned short" == type ||
@@ -220,7 +220,7 @@ bool is_twob_type(const std::string& type)
         "uint16_t" == type;
 }
 
-bool is_fourb_type(const std::string& type)
+bool is_fourb_type(const std::string & type)
 {
     return "int" == type ||
         "unsigned int" == type ||
@@ -230,7 +230,7 @@ bool is_fourb_type(const std::string& type)
         "unsigned long" == type;
 }
 
-bool is_eightb_type(const std::string& type)
+bool is_eightb_type(const std::string & type)
 {
     return "double" == type ||
         "long long" == type ||
@@ -239,7 +239,7 @@ bool is_eightb_type(const std::string& type)
         "uint64_t" == type;
 }
 
-bool is_integral_type(const std::string& type)
+bool is_integral_type(const std::string & type)
 {
     return "bool" == type ||
         "char" == type ||
@@ -267,7 +267,7 @@ bool is_integral_type(const std::string& type)
         "long double" == type;
 }
 
-std::string parse_item_type(const std::string& stlvec)
+std::string parse_item_type(const std::string & stlvec)
 {
     int start = stlvec.find_first_of('<');
     int end = stlvec.find_first_of('>', start + 1);
@@ -275,7 +275,7 @@ std::string parse_item_type(const std::string& stlvec)
     return stlvec.substr(start + 1, end - start - 1);
 }
 
-bool is_basic_type(const std::string& ctype, std::string* suffix = nullptr)
+bool is_basic_type(const std::string & ctype, std::string * suffix = nullptr)
 {
     auto type = ctype;
     auto pos = ctype.find_first_of('[');
@@ -359,18 +359,18 @@ bool is_basic_type(const std::string& ctype, std::string* suffix = nullptr)
     }
 }
 
-bool is_fixed_array_type(const std::string& type)
+bool is_fixed_array_type(const std::string & type)
 {
     std::size_t pos = type.find_first_of('[');
     return pos != std::string::npos;
 }
 
-bool is_string_type(const std::string& type)
+bool is_string_type(const std::string & type)
 {
     return type.find("string") != type.npos;
 }
 
-bool is_exists_field_except(const typeinfo& ti, const std::string& target, const std::string& except, std::string& field_type)
+bool is_exists_field_except(const typeinfo & ti, const std::string & target, const std::string & except, std::string & field_type)
 {
     if (target == except)
     {
@@ -387,7 +387,7 @@ bool is_exists_field_except(const typeinfo& ti, const std::string& target, const
     return false;
 }
 
-std::string get_array_field_trim_name(const std::string& name)
+std::string get_array_field_trim_name(const std::string & name)
 {
     std::size_t pos = name.find_first_of('[');
     if (name.npos == pos)
@@ -454,7 +454,7 @@ public:
         _Generate_messages_impl();
     }
 
-    void _Load_structure(const xmldrv::element& elem_structure)
+    void _Load_structure(const xmldrv::element & elem_structure)
     {
         typeinfo struc;
         struc.name = elem_structure.get_attribute_value("name", "");
@@ -469,7 +469,7 @@ public:
         }
     }
 
-    void _Load_message(const xmldrv::element& elem_message)
+    void _Load_message(const xmldrv::element & elem_message)
     {
         typeinfo msg;
         msg.name = elem_message.get_attribute_value("name", "");
@@ -505,7 +505,7 @@ public:
         }
     }
 
-    void _Load_field(const xmldrv::element& elem_field, typeinfo& msg)
+    void _Load_field(const xmldrv::element & elem_field, typeinfo & msg)
     {
         field f;
 
@@ -672,7 +672,7 @@ public:
                 if (mi->mode & MODE_ENCODE)
                     this->messages_decl << "    obstream encode(void)  const override;\n\n";
 
-                if (mi->mode & MODE_DECODE)  {
+                if (mi->mode & MODE_DECODE) {
                     this->messages_decl << "    // decode return the remain bytes of buffer.\n";
                     this->messages_decl << "    int decode(const char* data, int len) override;\n\n";
                 }
@@ -687,7 +687,7 @@ public:
                 if (mi->mode & MODE_ENCODE)
                     this->messages_decl << "    obstream encode(void) const;\n\n";
 
-                if (mi->mode & MODE_DECODE)  {
+                if (mi->mode & MODE_DECODE) {
                     this->messages_decl << "    // decode return the remain bytes of buffer.\n";
                     this->messages_decl << "    int decode(const char* data, int len);\n\n";
                 }
@@ -768,7 +768,7 @@ public:
                         _To_netval_lua(this->protocol_enc_lua, *mi, *fi, "msg.", 1);
                     }
 
-                    if (!mi->is_header && mi->zlib)  {
+                    if (!mi->is_header && mi->zlib) {
                         this->protocol_enc_lua << ident(1) << "obs:compress(offset); -- do body compress.\n\n";
                     }
 
@@ -843,7 +843,7 @@ public:
                     _To_netval(this->messages_impl, *mi, *fi, "this->", 1);
                 }
 
-                if (!mi->is_header && mi->zlib)  {
+                if (!mi->is_header && mi->zlib) {
                     this->messages_impl << ident(1) << "obs.compress(offset); // do body compress.\n\n";
                 }
 
@@ -930,7 +930,7 @@ public:
             "    auto target = s_table_message_ctor.find(command_id);\n"
             "    if(target != s_table_message_ctor.end())\n"
             "        return (target->second)();\n"
-           // "    assert(false);\n"
+            // "    assert(false);\n"
             "    return nullptr;\n";
         this->messages_impl << "}\n\n";
 
@@ -940,7 +940,7 @@ public:
 
         for (auto& mi : this->pi.messages)
         {
-            if (!mi.is_header){
+            if (!mi.is_header) {
                 if (mi.mode <= MODE_ALL) {
                     this->messages_impl << "    s_table_message_ctor[" << mi.command_id_detail[0] << "]" <<
                         "= []()->MsgBase*{ return new(s_allocp) " << mi.name << "(); };\n";
@@ -957,9 +957,9 @@ public:
         // write end of protocol.enc
         this->protocol_enc_lua << "\n";
         this->protocol_dec_lua << "\n";
-        }
+    }
 
-    void _To_netval_lua(std::ostream& of, const typeinfo& ti, const field& f, const std::string& prefix, int deep = 1)
+    void _To_netval_lua(std::ostream & of, const typeinfo & ti, const field & f, const std::string & prefix, int deep = 1)
     {
         std::string ident_str = ident(deep);
 #if 0 // disable condition support
@@ -980,7 +980,7 @@ public:
                     of << ident_str << "obs:write_" << sig << "(" << prefix << f.name << ");\n";
                 else { // MAY NOT support byte array
                     abort();
-                    /*of << ident_str << "obs:write_array(" << prefix << f.name << ", "
+                    /*of << ident_str << "obs:write_bytes(" << prefix << f.name << ", "
                         << "sizeof (" << f.name << ") );\n";*/
                 }
                 /*if(is_oneb_type(f.type)){
@@ -1038,7 +1038,7 @@ public:
 
             if (!num_of_cpy.empty())
             { // never go here currently
-                of << ident_str << "obs.write_array(" << prefix << get_field_name(f) << ", " << num_of_cpy << ");\n";
+                of << ident_str << "obs.write_bytes(" << prefix << get_field_name(f) << ", " << num_of_cpy << ");\n";
             }
             else {
                 if (is_stl_vector(f)) {
@@ -1082,7 +1082,7 @@ public:
                     {
                         new_prefix = prefix + f.name + "[" + index_var_name + "]";
                         temp.type.pop_back();
-                }
+                    }
                     else
                     {
                         std::string::size_type pos = f.name.find_first_of('[');
@@ -1090,9 +1090,9 @@ public:
                     }
                     _To_netval_lua(of, ti, temp, new_prefix, deep + 1);
                     of << ident_str << "end\n";
+                }
             }
         }
-    }
         --deep;
 
 #if 0 // disable condition support
@@ -1103,7 +1103,7 @@ public:
 #endif
     }
 
-    void _To_hostval_lua(std::ostream& of, const typeinfo& ti, const field& f, const std::string& prefix, int deep = 1)
+    void _To_hostval_lua(std::ostream & of, const typeinfo & ti, const field & f, const std::string & prefix, int deep = 1)
     {
         std::string ident_str = ident(deep);
 
@@ -1128,7 +1128,7 @@ public:
                 if (!is_fixed_array_type(f.name))
                     of << ident_str << prefix << f.name << " = " << "ibs:read_" << sig << "(); \n";
                 else
-                    assert(false);// of << ident_str << "ibs.read_array(" << prefix << f.name << ", " << "sizeof(" << f.name << ") );\n";; // TODO: implement
+                    assert(false);// of << ident_str << "ibs.read_bytes(" << prefix << f.name << ", " << "sizeof(" << f.name << ") );\n";; // TODO: implement
             }
             else if (is_string_type(f.type)) {
                 of << ident_str << prefix << f.name << " = " << "ibs:read_string();\n";
@@ -1174,7 +1174,7 @@ public:
 
             if (!num_of_cpy.empty())
             { // do not support currently
-                assert(false);// of << ident_str << "ibs.read_array(" << prefix << get_field_name(f) << ", " << num_of_cpy << ");\n";
+                assert(false);// of << ident_str << "ibs.read_bytes(" << prefix << get_field_name(f) << ", " << num_of_cpy << ");\n";
             }
             else {
                 if (is_stl_vector(f)) {
@@ -1243,7 +1243,7 @@ public:
 #endif
     }
 
-    void _To_netval(std::ostream& of, const typeinfo& ti, const field& f, const std::string& prefix, int deep = 1)
+    void _To_netval(std::ostream & of, const typeinfo & ti, const field & f, const std::string & prefix, int deep = 1)
     {
         std::string ident_str = ident(deep);
         if (!f.present_condition.empty() && 1 == deep)
@@ -1260,7 +1260,7 @@ public:
                 if (!is_fixed_array_type(f.name))
                     of << ident_str << "obs.write_i(" << prefix << f.name << ");\n";
                 else
-                    of << ident_str << "obs.write_array(" << prefix << f.name << ", "
+                    of << ident_str << "obs.write_bytes(" << prefix << f.name << ", "
                     << "sizeof (" << f.name << ") );\n";
                 /*if(is_oneb_type(f.type)){
                     of << ident_str << "*( (" << f.type << "*)ptr ) = " << prefix << f.name << ", ++ptr;\n";
@@ -1317,7 +1317,7 @@ public:
 
             if (!num_of_cpy.empty())
             {
-                of << ident_str << "obs.write_array(" << prefix << get_field_name(f) << ", " << num_of_cpy << ");\n";
+                of << ident_str << "obs.write_bytes(" << prefix << get_field_name(f) << ", " << num_of_cpy << ");\n";
             }
             else {
                 if (is_stl_vector(f)) {
@@ -1371,7 +1371,7 @@ public:
         }
     }
 
-    void _To_hostval(std::ostream& of, const typeinfo& ti, const field& f, const std::string& prefix, int deep = 1)
+    void _To_hostval(std::ostream & of, const typeinfo & ti, const field & f, const std::string & prefix, int deep = 1)
     {
         std::string ident_str = ident(deep);
 
@@ -1393,7 +1393,7 @@ public:
                 if (!is_fixed_array_type(f.name))
                     of << ident_str << "ibs.read_i(" << prefix << f.name << ");\n";
                 else
-                    of << ident_str << "ibs.read_array(" << prefix << f.name << ", " << "sizeof(" << f.name << ") );\n";; // TODO: implement
+                    of << ident_str << "ibs.read_bytes(" << prefix << f.name << ", " << "sizeof(" << f.name << ") );\n";; // TODO: implement
             }
             else if (is_string_type(f.type)) {
                 of << ident_str << "ibs.read_v(" << prefix << f.name << ");\n";
@@ -1438,7 +1438,7 @@ public:
 
             if (!num_of_cpy.empty())
             {
-                of << ident_str << "ibs.read_array(" << prefix << get_field_name(f) << ", " << num_of_cpy << ");\n";
+                of << ident_str << "ibs.read_bytes(" << prefix << get_field_name(f) << ", " << num_of_cpy << ");\n";
             }
             else {
                 if (is_stl_vector(f)) {
@@ -1498,7 +1498,7 @@ public:
         std::string arrayIndex;
     };
 
-    void lua2host(std::ostream& of, const typeinfo& ti, const field& f, const std::string& prefix, lua2host_context& context, int deep = 1)
+    void lua2host(std::ostream & of, const typeinfo & ti, const field & f, const std::string & prefix, lua2host_context & context, int deep = 1)
     { // TODO: use convert context.
         std::string ident_str = ident(deep);
 
@@ -1658,7 +1658,7 @@ public:
         std::string arrayIndex;
     };
 
-    void host2lua(std::ostream& of, const typeinfo& ti, const field& f, const std::string& prefix, host2lua_context& ctx, int deep = 1)
+    void host2lua(std::ostream & of, const typeinfo & ti, const field & f, const std::string & prefix, host2lua_context & ctx, int deep = 1)
     {
         std::string ident_str = ident(deep);
         if (!f.present_condition.empty() && 1 == deep)
@@ -1809,7 +1809,7 @@ public:
         }
     }
 
-    void _Append_string(std::ostream& of, const typeinfo& ti, const field& f, const std::string& prefix, int deep = 1)
+    void _Append_string(std::ostream & of, const typeinfo & ti, const field & f, const std::string & prefix, int deep = 1)
     {
         std::string ident_str = ident(deep);
 
@@ -1916,7 +1916,7 @@ public:
 
     }
 
-    void _Write_start(std::ofstream& f, const char* filename)
+    void _Write_start(std::ofstream & f, const char* filename)
     {
         std::string op("_");
         op.append(filename);
@@ -1926,12 +1926,12 @@ public:
         f << "#define " << op << "\n";
     }
 
-    void _Write_end(std::ofstream& f)
+    void _Write_end(std::ofstream & f)
     {
         f << "\n#endif\n\n";
     }
 
-    void _Get_length_corresponds(const typeinfo& ti, const field& f, std::string& length_symbol, std::string& num_of_cpy, std::string& loop_condition, std::string& length_specifier_type, const std::string& prefix)
+    void _Get_length_corresponds(const typeinfo & ti, const field & f, std::string & length_symbol, std::string & num_of_cpy, std::string & loop_condition, std::string & length_specifier_type, const std::string & prefix)
     {
         std::string index_var_name = get_array_field_trim_name(f.name) + "index";
         if (!f.length_specifier.empty()) {
@@ -2024,6 +2024,5 @@ int main(int argc, char** argv)
     std::cout << "generate code sucessfully, press 'ENTER' to exit...\n";
     // getchar();
     return 0;
-        };
-
+};
 
